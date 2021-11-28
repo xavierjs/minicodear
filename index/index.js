@@ -53,6 +53,7 @@ Page({
 
 
   init_faceFilter(canvas, cb) {
+    let isFaceDetected = false;
     faceFilter.init({
       followZRot: true,
       canvas: canvas,
@@ -68,16 +69,21 @@ Page({
         }
         // [init scene with spec...]
         console.log("INFO: JEELIZFACEFILTER IS READY");
-        const THREE = createScopedThreejs(canvas)
-        this.init_threeScene(spec,THREE);
+        //const THREE = createScopedThreejs(canvas)
+        //this.init_threeScene(spec,THREE);
         if (cb){
           cb();
         }
       }, //end callbackReady()
       // called at each render iteration (drawing loop)
       callbackTrack: function (detectState) {
-       // console.log(detectState);
-        JeelizThreeHelper.render(detectState, THREECAMERA,THREE);
+        if (detectState.isDetected && !isFaceDetected){
+          isFaceDetected = true;
+          alert('Face detected!');
+        } else if (!detectState.isDetected){
+          isFaceDetected = false;
+        }
+        //JeelizThreeHelper.render(detectState, THREECAMERA,THREE);
       }, //end callbackTrack()
     });
   },
