@@ -231,13 +231,13 @@ const JeelizThreeHelper = (function(){
       detect(ds);
       update_poses(ds, threeCamera);
 
-        // render the video texture on the faceFilter canvas:
-        _gl.viewport(0, 0, _faceFilterCv.width, _faceFilterCv.height);
-        _gl.useProgram(_glShpCopyCut);
-        _gl.uniformMatrix2fv(_glShpCopyCutVideoMatUniformPointer, false, _videoTransformMat2);
-        _gl.activeTexture(_gl.TEXTURE0);
-        _gl.bindTexture(_gl.TEXTURE_2D, _glVideoTexture);
-        _gl.drawElements(_gl.TRIANGLES, 3, _gl.UNSIGNED_SHORT, 0);
+      // render the video texture on the faceFilter canvas:
+      _gl.viewport(0, 0, _faceFilterCv.width, _faceFilterCv.height);
+      _gl.useProgram(_glShpCopyCut);
+      _gl.uniformMatrix2fv(_glShpCopyCutVideoMatUniformPointer, false, _videoTransformMat2);
+      _gl.activeTexture(_gl.TEXTURE0);
+      _gl.bindTexture(_gl.TEXTURE_2D, _glVideoTexture);
+      _gl.drawElements(_gl.TRIANGLES, 3, _gl.UNSIGNED_SHORT, 0);
       
 
       // trigger the render of the THREE.JS SCENE:
