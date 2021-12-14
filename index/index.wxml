@@ -11,6 +11,7 @@
 <canvas
   id="webgl"
   type="webgl"
+  class="cv"
   canvas-id="canvas"
   style="width: {{width}}px; height: {{height}}px;"
 >
@@ -18,6 +19,7 @@
 <canvas
   id="webglThree"
   type="webgl"
+  class="cv"
   canvas-id="canvasThree"
   style="width: {{width}}px; height: {{height}}px;"
 >

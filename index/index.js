@@ -22,7 +22,7 @@ Page({
   },
   onReady: function () {
     const selector = wx.createSelectorQuery()
-    selector.selectAll('canvas')
+    selector.selectAll('.cv')
       .node(this.init.bind(this))
       .exec()
   },
@@ -37,8 +37,8 @@ Page({
   },
 
   // build the 3D. called once when Jeeliz Face Filter is OK:
-  init_threeScene(spec,THREE) {
-    const threeStuffs = JeelizThreeHelper.init(THREE ,spec, this.detect_callback);
+  init_threeScene(spec, threeCanvas, THREE) {
+    const threeStuffs = JeelizThreeHelper.init(THREE, threeCanvas, spec, this.detect_callback);
 
     // CREATE A CUBE
     const cubeGeometry = new THREE.BoxGeometry(1,1,1);
@@ -53,6 +53,8 @@ Page({
 
 
   init_faceFilter(canvas, canvasThree, cb) {
+    const THREE = createScopedThreejs(canvasThree)
+    
     const that = this;
     faceFilter.init({
       followZRot: true,
@@ -69,8 +71,7 @@ Page({
         }
         // [init scene with spec...]
         console.log("INFO: JEELIZFACEFILTER IS READY");
-        const THREE = createScopedThreejs(canvasThree)
-        that.init_threeScene(spec,THREE);
+        that.init_threeScene(spec, canvasThree, THREE);
         if (cb){
           cb();
         }
@@ -85,7 +86,8 @@ Page({
 
 
   init(res) {
-    const canvas = res.node
+    const canvas = res[0].node
+    const canvasThree = res[1].node
     const context = wx.createCameraContext()
     var isInitialized = false
     faceFilter.FAKEDOM.window.setCanvas(canvas)

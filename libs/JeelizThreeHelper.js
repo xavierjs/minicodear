@@ -27,7 +27,6 @@ const JeelizThreeHelper = (function(){
       _isMultiFaces = false,
       _detectCallback = null,
       _isVideoTextureReady = false,
-      _isSeparateThreeCanvas = false,
       _faceFilterCv = null,
       _videoElement = null,
       _isDetected = false,
@@ -80,59 +79,27 @@ const JeelizThreeHelper = (function(){
           gl_FragColor = texture2D(samplerVideo, vUV);\n\
         }";
 
-    if (_isSeparateThreeCanvas){
-      const compile_shader = function(source, type, typeString) {
-        const glShader = _gl.createShader(type);
-        _gl.shaderSource(glShader, source);
-        _gl.compileShader(glShader);
-        if (!_gl.getShaderParameter(glShader, _gl.COMPILE_STATUS)) {
-          alert("ERROR IN " + typeString + " SHADER: " + _gl.getShaderInfoLog(glShader));
-          return null;
-        }
-        return glShader;
-      };
-
-      const glShaderVertex =   compile_shader(videoScreenVertexShaderSource, _gl.VERTEX_SHADER, 'VERTEX');
-      const glShaderFragment = compile_shader(videoScreenFragmentShaderSource, _gl.FRAGMENT_SHADER, 'FRAGMENT');
-
-      _glShpCopyCut = _gl.createProgram();
-      _gl.attachShader(_glShpCopyCut, glShaderVertex);
-      _gl.attachShader(_glShpCopyCut, glShaderFragment);
-
-      _gl.linkProgram(_glShpCopyCut);
-      const samplerVideo = _gl.getUniformLocation(_glShpCopyCut, 'samplerVideo');
-      _glShpCopyCutVideoMatUniformPointer = _gl.getUniformLocation(_glShpCopyCut, 'videoTransformMat2');
-
-      return;
-    }
-
-    // init video texture with red:
-    _threeVideoTexture = new THREE.DataTexture( new Uint8Array([255,0,0]), 1, 1, THREE.RGBFormat);
-    _threeVideoTexture.needsUpdate = true;
-
-    // CREATE THE VIDEO BACKGROUND:
-    const videoMaterial = new THREE.RawShaderMaterial({
-      depthWrite: false,
-      depthTest: false,
-      vertexShader: videoScreenVertexShaderSource,
-      fragmentShader: videoScreenFragmentShaderSource,
-      uniforms:{
-        samplerVideo: {value: _threeVideoTexture},
-        videoTransformMat2: {
-          value: _videoTransformMat2
-        }
+    const compile_shader = function(source, type, typeString) {
+      const glShader = _gl.createShader(type);
+      _gl.shaderSource(glShader, source);
+      _gl.compileShader(glShader);
+      if (!_gl.getShaderParameter(glShader, _gl.COMPILE_STATUS)) {
+        alert("ERROR IN " + typeString + " SHADER: " + _gl.getShaderInfoLog(glShader));
+        return null;
       }
-    });
+      return glShader;
+    };
 
-    const videoGeometry = new THREE.BufferGeometry()
-    const videoScreenCorners = new Float32Array([-1,-1,   1,-1,   1,1,   -1,1]);
-    videoGeometry.addAttribute( 'position', new THREE.BufferAttribute( videoScreenCorners, 2 ) );
-    videoGeometry.setIndex(new THREE.BufferAttribute(new Uint16Array([0,1,2, 0,2,3]), 1));
-    _threeVideoMesh = new THREE.Mesh(videoGeometry, videoMaterial);
-    that.apply_videoTexture(_threeVideoMesh);
-    _threeVideoMesh.renderOrder = -1000; // render first
-    _threeVideoMesh.frustumCulled = false;
-    _threeScene.add(_threeVideoMesh);
+    const glShaderVertex =   compile_shader(videoScreenVertexShaderSource, _gl.VERTEX_SHADER, 'VERTEX');
+    const glShaderFragment = compile_shader(videoScreenFragmentShaderSource, _gl.FRAGMENT_SHADER, 'FRAGMENT');
+
+    _glShpCopyCut = _gl.createProgram();
+    _gl.attachShader(_glShpCopyCut, glShaderVertex);
+    _gl.attachShader(_glShpCopyCut, glShaderFragment);
+
+    _gl.linkProgram(_glShpCopyCut);
+    const samplerVideo = _gl.getUniformLocation(_glShpCopyCut, 'samplerVideo');
+    _glShpCopyCutVideoMatUniformPointer = _gl.getUniformLocation(_glShpCopyCut, 'videoTransformMat2');
   } //end create_videoScreen()
 
   function detect(detectState){
@@ -199,7 +166,7 @@ const JeelizThreeHelper = (function(){
   //public methods:
   const that = {
     // launched with the same spec object than callbackReady. set spec.threeCanvasId to the ID of the threeCanvas to be in 2 canvas mode:
-    init: function(scopeThree,spec, detectCallback){
+    init: function(scopeThree, threeCanvas, spec, detectCallback){
       THREE = scopeThree
       destroy();
 
@@ -212,17 +179,6 @@ const JeelizThreeHelper = (function(){
       _videoElement = spec.videoElement;
 
       // enable 2 canvas mode if necessary:
-      let threeCanvas = null;
-      if (spec.threeCanvasId){
-        _isSeparateThreeCanvas = true;
-        // adjust the threejs canvas size to the threejs canvas:
-        threeCanvas = document.getElementById(spec.threeCanvasId);
-        threeCanvas.setAttribute('width', _faceFilterCv.width);
-        threeCanvas.setAttribute('height', _faceFilterCv.height);
-      } else {
-        threeCanvas = _faceFilterCv;
-      }
-
       if (typeof(detectCallback) !== 'undefined'){
         _detectCallback = detectCallback;
       }
@@ -230,9 +186,8 @@ const JeelizThreeHelper = (function(){
 
        // init THREE.JS context:
       _threeRenderer = new THREE.WebGLRenderer({
-        context: (_isSeparateThreeCanvas) ? null : _gl,
         canvas: threeCanvas,
-        alpha: (_isSeparateThreeCanvas || spec.alpha) ? true : false
+        alpha: true
       });
 
       _threeTranslation = new THREE.Vector3();
@@ -276,7 +231,6 @@ const JeelizThreeHelper = (function(){
       detect(ds);
       update_poses(ds, threeCamera);
 
-      if (_isSeparateThreeCanvas){
         // render the video texture on the faceFilter canvas:
         _gl.viewport(0, 0, _faceFilterCv.width, _faceFilterCv.height);
         _gl.useProgram(_glShpCopyCut);
@@ -284,11 +238,7 @@ const JeelizThreeHelper = (function(){
         _gl.activeTexture(_gl.TEXTURE0);
         _gl.bindTexture(_gl.TEXTURE_2D, _glVideoTexture);
         _gl.drawElements(_gl.TRIANGLES, 3, _gl.UNSIGNED_SHORT, 0);
-      } else {
-        // reinitialize the state of THREE.JS because JEEFACEFILTER have changed stuffs:
-        // -> can be VERY costly !
-        _threeRenderer.state.reset();
-      }
+      
 
       // trigger the render of the THREE.JS SCENE:
       _threeRenderer.render(_threeScene, threeCamera);
