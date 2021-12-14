@@ -13,8 +13,8 @@
   type="webgl"
   class="cv"
   canvas-id="canvas"
-  width={{width}}
-  height={{height}}
+  width="{{width}}"
+  height="{{height}}"
   style="width: {{width}}px; height: {{height}}px;top:0;left:0;position: absolute;z-index:1"
 >
 </canvas>
@@ -23,8 +23,8 @@
   type="webgl"
   class="cv"
   canvas-id="canvasThree"
-  width={{width}}
-  height={{height}}
+  width="{{width}}"
+  height="{{height}}"
   style="width: {{width}}px; height: {{height}}px;top:0;left:0;position: absolute;z-index:2"
 >
 </canvas>
