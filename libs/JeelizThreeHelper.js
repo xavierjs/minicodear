@@ -269,7 +269,7 @@ const JeelizThreeHelper = (function(){
       return _isDetected;
     },
 
-    render: function(detectState, threeCamera,THREE){
+    render: function(detectState, threeCamera){
       const ds = (_isMultiFaces) ? detectState : [detectState];
 
       // update detection states then poses:

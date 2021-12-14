@@ -22,7 +22,7 @@ Page({
   },
   onReady: function () {
     const selector = wx.createSelectorQuery()
-    selector.select('#webgl')
+    selector.selectAll('canvas')
       .node(this.init.bind(this))
       .exec()
   },
@@ -41,18 +41,19 @@ Page({
     const threeStuffs = JeelizThreeHelper.init(THREE ,spec, this.detect_callback);
 
     // CREATE A CUBE
-   const cubeGeometry = new THREE.BoxGeometry(1,1,1);
-   const cubeMaterial = new THREE.MeshNormalMaterial();
-   const threeCube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-   threeCube.frustumCulled = false;
-   threeStuffs.faceObject.add(threeCube);
+    const cubeGeometry = new THREE.BoxGeometry(1,1,1);
+    const cubeMaterial = new THREE.MeshNormalMaterial();
+    const threeCube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    threeCube.frustumCulled = false;
+    threeStuffs.faceObject.add(threeCube);
  
-   //CREATE THE CAMERA
-   THREECAMERA = JeelizThreeHelper.create_camera();
+    //CREATE THE CAMERA
+    THREECAMERA = JeelizThreeHelper.create_camera();
   },
 
 
-  init_faceFilter(canvas, cb) {
+  init_faceFilter(canvas, canvasThree, cb) {
+    const that = this;
     faceFilter.init({
       followZRot: true,
       canvas: canvas,
@@ -68,8 +69,8 @@ Page({
         }
         // [init scene with spec...]
         console.log("INFO: JEELIZFACEFILTER IS READY");
-        const THREE = createScopedThreejs(canvas)
-        this.init_threeScene(spec,THREE);
+        const THREE = createScopedThreejs(canvasThree)
+        that.init_threeScene(spec,THREE);
         if (cb){
           cb();
         }
@@ -77,7 +78,7 @@ Page({
       // called at each render iteration (drawing loop)
       callbackTrack: function (detectState) {
        // console.log(detectState);
-        JeelizThreeHelper.render(detectState, THREECAMERA,THREE);
+        JeelizThreeHelper.render(detectState, THREECAMERA);
       }, //end callbackTrack()
     });
   },
@@ -89,7 +90,7 @@ Page({
     var isInitialized = false
     faceFilter.FAKEDOM.window.setCanvas(canvas)
     let isFFInitialized = false
-    this.init_faceFilter(canvas, function(){
+    this.init_faceFilter(canvas, canvasThree, function(){
       isFFInitialized = true
     })
 

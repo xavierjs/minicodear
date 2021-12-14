@@ -15,3 +15,10 @@
   style="width: {{width}}px; height: {{height}}px;"
 >
 </canvas>
+<canvas
+  id="webglThree"
+  type="webgl"
+  canvas-id="canvasThree"
+  style="width: {{width}}px; height: {{height}}px;"
+>
+</canvas>
