@@ -18,13 +18,9 @@
   style="width: {{width}}px; height: {{height}}px;top:0;left:0;position: absolute;z-index:1"
 >
 </canvas>
-<canvas
-  id="webglThree"
-  type="webgl"
-  class="cv"
-  canvas-id="canvasThree"
-  width="{{width}}"
-  height="{{height}}"
-  style="width: {{width}}px; height: {{height}}px;top:0;left:0;position: absolute;z-index:2"
+<input
+  id="displayVal"
+  type="text"
+  style="width: top:0;left:0;position: absolute;z-index:2"
 >
 </canvas>

@@ -1,12 +1,10 @@
 import faceFilter from "../libs/jeelizFaceFilter.moduleNoDOM.js";
-import JeelizThreeHelper from "../libs/JeelizThreeHelper.js";
 import neuralNetworkModel from "../neuralNets/NN_DEFAULT";
-import {createScopedThreejs} from 'threejs-miniprogram'
+
 
 const vw = 288
 const vh = 384
 
-let THREECAMERA = undefined
 //const arrayBuffer = new Uint8Array(vw * vh * 4); // vw and vh are video width and height in pixels
 const FAKEVIDEOELEMENT = {
   isFakeVideo: true, //always true
@@ -15,6 +13,8 @@ const FAKEVIDEOELEMENT = {
   videoWidth: vw, //width in pixels
   needsUpdate: false // boolean
 };
+
+let INPUTDEBUG = null
 
 Page({
   data: {
@@ -26,6 +26,12 @@ Page({
     selector.selectAll('.cv')
       .node(this.init.bind(this))
       .exec()
+
+    const selector2 = wx.createSelectorQuery()
+    selector2.select('#displayVal')
+      .node((res) => {
+        INPUTDEBUG = res.node
+      }).exec()
   },
 
   // callback: launched if a face is detected or lost
@@ -37,25 +43,8 @@ Page({
     }
   },
 
-  // build the 3D. called once when Jeeliz Face Filter is OK:
-  init_threeScene(spec, threeCanvas, THREE) {
-    const threeStuffs = JeelizThreeHelper.init(THREE, threeCanvas, spec, this.detect_callback);
 
-    // CREATE A CUBE
-    const cubeGeometry = new THREE.BoxGeometry(1,1,1);
-    const cubeMaterial = new THREE.MeshNormalMaterial();
-    const threeCube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-    threeCube.frustumCulled = false;
-    threeStuffs.faceObject.add(threeCube);
- 
-    //CREATE THE CAMERA
-    THREECAMERA = JeelizThreeHelper.create_camera();
-  },
-
-
-  init_faceFilter(canvas, canvasThree, cb) {
-    const THREE = createScopedThreejs(canvasThree)
-    
+  init_faceFilter(canvas, cb) {
     const that = this;
     faceFilter.init({
       followZRot: true,
@@ -75,15 +64,18 @@ Page({
         }
         // [init scene with spec...]
         console.log("INFO: JEELIZFACEFILTER IS READY");
-        that.init_threeScene(spec, canvasThree, THREE);
+        
         if (cb){
           cb();
         }
       }, //end callbackReady()
       // called at each render iteration (drawing loop)
       callbackTrack: function (detectState) {
-       // console.log(detectState);
-        JeelizThreeHelper.render(detectState, THREECAMERA);
+        // console.log(detectState);
+        if (INPUTDEBUG !== null){
+          INPUTDEBUG.value = detectState.detected.toFixed(4);
+        }
+
       },
     });
   },
@@ -93,12 +85,11 @@ Page({
     const canvas = res[0].node
     canvas.addEventListener = function() {}
     canvas.removeEventListener = function () {}
-    const canvasThree = res[1].node
     const context = wx.createCameraContext()
     var isInitialized = false
     faceFilter.FAKEDOM.window.setCanvas(canvas)
     let isFFInitialized = false
-    this.init_faceFilter(canvas, canvasThree, function(){
+    this.init_faceFilter(canvas, function(){
       isFFInitialized = true
     })
 
