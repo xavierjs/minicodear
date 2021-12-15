@@ -14,7 +14,7 @@ const FAKEVIDEOELEMENT = {
   needsUpdate: false // boolean
 };
 
-let INPUTDEBUG = null
+let COUNT = 0
 
 Page({
   data: {
@@ -27,12 +27,6 @@ Page({
     selector.selectAll('.cv')
       .node(this.init.bind(this))
       .exec()
-
-    const selector2 = wx.createSelectorQuery()
-    selector2.select('#displayVal')
-      .node((res) => {
-        INPUTDEBUG = res.node
-      }).exec()
   },
 
   // callback: launched if a face is detected or lost
@@ -73,7 +67,11 @@ Page({
       // called at each render iteration (drawing loop)
       callbackTrack: function (detectState) {
         // console.log(detectState);
-        that.data.debugVal = detectState.detected.toFixed(4);
+        if (++COUNT%10 === 0){
+          that.setData({
+            debugVal: detectState.detected.toFixed(4)
+          });
+        }
       },
     });
   },
