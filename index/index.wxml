@@ -19,8 +19,8 @@
 >
 </canvas>
 <input
-  id="displayVal"
   type="text"
-  style="width: top:0;left:0;position: absolute;z-index:2"
+  value="{{debugVal}}"
+  style="background-color:yellow;top:0;left:0;position: absolute;z-index:2"
 >
-</canvas>
+</input>

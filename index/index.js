@@ -18,6 +18,7 @@ let INPUTDEBUG = null
 
 Page({
   data: {
+    debugVal: -1,
     width: 288,
     height: 384,
   },
@@ -72,10 +73,7 @@ Page({
       // called at each render iteration (drawing loop)
       callbackTrack: function (detectState) {
         // console.log(detectState);
-        if (INPUTDEBUG !== null){
-          INPUTDEBUG.value = detectState.detected.toFixed(4);
-        }
-
+        that.data.debugVal = detectState.detected.toFixed(4);
       },
     });
   },
