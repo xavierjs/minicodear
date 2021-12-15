@@ -1,5 +1,4 @@
 import faceFilter from "../libs/jeelizFaceFilter.moduleNoDOM.js";
-import JeelizResizer from "../libs/JeelizResizer.js";
 import JeelizThreeHelper from "../libs/JeelizThreeHelper.js";
 import neuralNetworkModel from "../neuralNets/NN_DEFAULT";
 import {createScopedThreejs} from 'threejs-miniprogram'
