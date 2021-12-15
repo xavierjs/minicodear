@@ -67,6 +67,9 @@ Page({
       NNC: neuralNetworkModel,
       callbackReady: function (errCode, spec) {
         if (errCode) {
+          wx.showToast({
+            title: 'FF ERROR: ' + errCode,
+          });
           console.log("AN ERROR HAPPENS. ERROR CODE =", errCode);
           return;
         }
@@ -81,13 +84,15 @@ Page({
       callbackTrack: function (detectState) {
        // console.log(detectState);
         JeelizThreeHelper.render(detectState, THREECAMERA);
-      }, //end callbackTrack()
+      },
     });
   },
 
 
   init(res) {
     const canvas = res[0].node
+    canvas.addEventListener = function() {}
+    canvas.removeEventListener = function () {}
     const canvasThree = res[1].node
     const context = wx.createCameraContext()
     var isInitialized = false
