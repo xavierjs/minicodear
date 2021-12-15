@@ -3,11 +3,13 @@ import JeelizResizer from "../libs/JeelizResizer.js";
 import JeelizThreeHelper from "../libs/JeelizThreeHelper.js";
 import neuralNetworkModel from "../neuralNets/NN_DEFAULT";
 import {createScopedThreejs} from 'threejs-miniprogram'
+
 const vw = 288
 const vh = 384
-var THREECAMERA = undefined
+
+let THREECAMERA = undefined
 //const arrayBuffer = new Uint8Array(vw * vh * 4); // vw and vh are video width and height in pixels
-var FAKEVIDEOELEMENT = {
+const FAKEVIDEOELEMENT = {
   isFakeVideo: true, //always true
   arrayBuffer: null, // the WeChat video arrayBuffer
   videoHeight: vh, // height in pixels
