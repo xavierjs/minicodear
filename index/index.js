@@ -82,7 +82,7 @@ Page({
     canvas.addEventListener = function() {}
     canvas.removeEventListener = function () {}
     const context = wx.createCameraContext()
-    var isInitialized = false
+    let isInitialized = false
     faceFilter.FAKEDOM.window.setCanvas(canvas)
     let isFFInitialized = false
     this.init_faceFilter(canvas, function(){
